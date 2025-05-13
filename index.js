@@ -19,10 +19,14 @@ function cleanHtmlBody(html) {
 // Recursively remove attributes from a node and its entire subtree
 function cleanNode(node) {
     if (node.nodeType === 1) {
-      // Remove all attributes
-      while (node.attributes.length > 0) {
-        node.removeAttribute(node.attributes[0].name);
-      }
+      // Define attributes to preserve
+      const preservedAttributes = ["href", "src", "alt", "title", "target"];
+      // Remove all attributes except the preserved ones
+      Array.from(node.attributes).forEach(attr => {
+        if (!preservedAttributes.includes(attr.name)) {
+          node.removeAttribute(attr.name);
+        }
+      });
       // Recurse into children
       Array.from(node.childNodes).forEach(child => cleanNode(child));
     }
@@ -41,8 +45,9 @@ if (require.main === module) {
     html: output
   }
   const safeJson = JSON.stringify(jsonResponse);
-  console.log("🚀 ~ safeJson:", safeJson)
+  // console.log("🚀 ~ safeJson:", safeJson)
   
+  fs.writeFileSync("output.json", safeJson);
   fs.writeFileSync("output.html", output);
   console.log("ok");
 }
